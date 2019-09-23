@@ -1,32 +1,22 @@
 <?php
 
+namespace Tests\Framework\Http;
+
 use Framework\Http\Request;
 use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
-    private $request;
-
-    /**
-     * Подгатавливаем данные для теста
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $_GET = [];
-        $_POST = [];
-
-        $this->request = new Request();
-    }
-
     /**
      * Проверяем корретность поведения методов при пустых значениях
      * глобальных массивов GET и POST
      */
     public function testEmpty(): void
     {
-        $this->assertEquals([], $this->request->getQueryParams());
-        $this->assertNull($this->request->getParsedBody());
+        $request = new Request();
+
+        $this->assertEquals([], $request->getQueryParams());
+        $this->assertNull($request->getParsedBody());
     }
 
     /**
@@ -35,13 +25,13 @@ class RequestTest extends TestCase
      */
     public function testQueryParams(): void
     {
-        $_GET = $data = [
+        $request = new Request($data = [
             'name' => 'Semyon',
             'age'  => 32,
-        ];
+        ]);
 
-        $this->assertEquals($data, $this->request->getQueryParams());
-        $this->assertNull($this->request->getParsedBody());
+        $this->assertEquals($data, $request->getQueryParams());
+        $this->assertNull($request->getParsedBody());
     }
 
     /**
@@ -50,9 +40,9 @@ class RequestTest extends TestCase
      */
     public function testParsedBody(): void
     {
-        $_POST = $data = ['title' => 'song'];
+        $request = new Request([], $data = ['title' => 'song']);
 
-        $this->assertEquals([], $this->request->getQueryParams());
-        $this->assertEquals($data, $this->request->getParsedBody());
+        $this->assertEquals([], $request->getQueryParams());
+        $this->assertEquals($data, $request->getParsedBody());
     }
 }

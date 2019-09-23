@@ -4,13 +4,41 @@ namespace Framework\Http;
 
 class Request
 {
-    public function getQueryParams(): array
+    /** @var array Данные строки запроса */
+    private $queryParams;
+
+    /** @var array|null Данные тела запроса */
+    private $parsedBody;
+
+    /**
+     * Request constructor.
+     *
+     * @param array      $queryParams Данные переданные в строке запроса
+     * @param array|null $parsedBody  Данные переданные в теле запроса
+     */
+    public function __construct(array $queryParams = [], ?array $parsedBody = null)
     {
-        return $_GET;
+        $this->queryParams = $queryParams;
+        $this->parsedBody = $parsedBody;
     }
 
+    /**
+     * Возвращаем переменные строки запроса
+     *
+     * @return array
+     */
+    public function getQueryParams(): array
+    {
+        return $this->queryParams;
+    }
+
+    /**
+     * Возвращаем переменные тела запроса
+     *
+     * @return array|null
+     */
     public function getParsedBody(): ?array
     {
-        return $_POST ?: null;
+        return $this->parsedBody;
     }
 }
