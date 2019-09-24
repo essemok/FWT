@@ -23,6 +23,30 @@ class Request
     }
 
     /**
+     * Сеттер для параметров строки запроса
+     *
+     * @param array $queryParams
+     * @return Request
+     */
+    public function setQueryParams(array $queryParams): Request
+    {
+        $this->queryParams = $queryParams;
+        return $this;
+    }
+
+    /**
+     * Сеттер для параметров из тела запроса
+     *
+     * @param array|null $parsedBody
+     * @return Request
+     */
+    public function setParsedBody($parsedBody): Request
+    {
+        $this->parsedBody = $parsedBody;
+        return $this;
+    }
+
+    /**
      * Возвращаем переменные строки запроса
      *
      * @return array
