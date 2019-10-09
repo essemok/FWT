@@ -5,6 +5,7 @@ namespace Framework\Http\Router;
 
 
 use Framework\Http\Router\Exception\RequestNotMatchedException;
+use Framework\Http\Router\Exception\RouteNotFoundException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Router
@@ -25,16 +26,40 @@ class Router
     {
         foreach ($this->routes->getRoutes() as $route) {
 
+            if ($route->methods && !in_array($request->getMethod(), $route->methods, true)) {
+                continue;
+            }
+
+            $pattern = preg_replace_callback('~\{([^\}]+)\}~', function ($matches) use ($route) {
+                $argument = $matches[1];
+                $replace = $route->tokens[$argument] ?? '[^}]+';
+                return '(?P<' . $argument . '>' . $replace . ')';
+            }, $route->pattern);
+
             if (preg_match($pattern, $request->getUri()->getPath(), $matches)) {
                 return new Result($name, $handler, $attributes);
-               }
+            }
         }
 
         throw new RequestNotMatchedException($request);
     }
 
-    public function generate($name, array $attributes = []): string
+    public function generate($name, array $params = []): string
     {
+        $arguments = array_filter($params);
 
+        foreach ($this->routes->getRoutes() as $route) {
+            if ($name !== $route->name) {
+                continue;
+            }
+
+            //url = ...
+
+            if ($url !== null) {
+                return $url;
+            }
+
+            throw new RouteNotFoundException($name, $params);
+        }
     }
 }
