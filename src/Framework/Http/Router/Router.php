@@ -36,8 +36,13 @@ class Router
                 return '(?P<' . $argument . '>' . $replace . ')';
             }, $route->pattern);
 
-            if (preg_match($pattern, $request->getUri()->getPath(), $matches)) {
-                return new Result($name, $handler, $attributes);
+            $path = $request->getUri()->getPath();
+            if (preg_match('~^' . $pattern . '$~i', $path, $matches)) {
+                return new Result(
+                    $route->name,
+                    $route->handler,
+                    array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY)
+                );
             }
         }
 
@@ -53,7 +58,13 @@ class Router
                 continue;
             }
 
-            //url = ...
+            $url = preg_replace_callback('~\{([^\}]+)\}~', function ($matches) use (&$arguments){
+               $argument = $matches[1];
+               if (!array_key_exists($argument, $arguments)) {
+                   throw new \InvalidArgumentException('Missing parametr "' . $argument . '"');
+               }
+               return $arguments[$argument];
+            }, $route->pattern);
 
             if ($url !== null) {
                 return $url;
